@@ -1,0 +1,6 @@
+site_name: Admin Service Docs
+site_description: Documentation for the internal admin service powering operations workflows.
+nav:
+  - Overview: index.md
+plugins:
+  - techdocs-core

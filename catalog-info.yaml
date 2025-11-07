@@ -1,13 +1,25 @@
+---
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: backstage
-  description: An example of a Backstage application.
-  # Example for optional annotations
-  # annotations:
-  #   github.com/project-slug: backstage/backstage
-  #   backstage.io/techdocs-ref: dir:.
+  name: shopsphere-developer-portal
+  description: Backstage instance that powers ShopSphere's internal commerce platform catalog.
+  tags:
+    - backstage
+    - commerce
+  annotations:
+    backstage.io/techdocs-ref: dir:./catalogs/docs/shopsphere-developer-portal
 spec:
   type: website
-  owner: john@example.com
-  lifecycle: experimental
+  owner: storefront-team
+  lifecycle: production
+---
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: shopsphere-demo-catalog
+  description: Catalog entities for the ShopSphere e-commerce platform demo.
+spec:
+  targets:
+    - ./catalogs/org.yaml
+    - ./catalogs/entities.yaml

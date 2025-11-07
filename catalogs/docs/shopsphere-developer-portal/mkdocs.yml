@@ -1,0 +1,6 @@
+site_name: ShopSphere Developer Portal
+site_description: Documentation for the Backstage portal that hosts the internal software catalog.
+nav:
+  - Overview: index.md
+plugins:
+  - techdocs-core

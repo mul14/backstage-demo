@@ -1,0 +1,6 @@
+site_name: Checkout Service Docs
+site_description: Service documentation for checkout, payments, and order creation.
+nav:
+  - Overview: index.md
+plugins:
+  - techdocs-core

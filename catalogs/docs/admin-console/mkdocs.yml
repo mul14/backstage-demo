@@ -1,0 +1,6 @@
+site_name: Admin Console Docs
+site_description: Documentation for the internal console used by ShopSphere staff.
+nav:
+  - Overview: index.md
+plugins:
+  - techdocs-core

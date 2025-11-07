@@ -1,0 +1,425 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: System
+metadata:
+  name: ecommerce-platform
+  description: ShopSphere platform that powers browsing, checkout, and order fulfillment.
+spec:
+  owner: commerce-tech
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: orders-db
+  description: Managed PostgreSQL cluster storing carts, orders, and payment intents.
+  annotations:
+    backstage.io/techdocs-ref: dir:./docs/orders-db
+spec:
+  type: database
+  owner: checkout-team
+  system: ecommerce-platform
+---
+apiVersion: backstage.io/v1alpha1
+kind: Resource
+metadata:
+  name: session-cache
+  description: Redis cluster used for carts, personalization, and idempotency keys.
+spec:
+  type: cache
+  owner: storefront-team
+  system: ecommerce-platform
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: storefront-app
+  description: React storefront that customers use to browse products and manage carts.
+  annotations:
+    backstage.io/techdocs-ref: dir:./docs/storefront-app
+spec:
+  type: website
+  lifecycle: production
+  owner: storefront-team
+  system: ecommerce-platform
+  dependsOn:
+    - resource:default/orders-db
+    - resource:default/session-cache
+  providesApis:
+    - product-catalog-api
+  consumesApis:
+    - checkout-api
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: checkout-service
+  description: Node.js service that handles checkout, payments, and order creation.
+  annotations:
+    backstage.io/techdocs-ref: dir:./docs/checkout-service
+spec:
+  type: service
+  lifecycle: production
+  owner: checkout-team
+  system: ecommerce-platform
+  dependsOn:
+    - resource:default/orders-db
+    - resource:default/session-cache
+  providesApis:
+    - checkout-api
+    - order-events-api
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: admin-service
+  description: Internal service that powers admin workflows for merchandising and customer support.
+  annotations:
+    backstage.io/techdocs-ref: dir:./docs/admin-service
+spec:
+  type: service
+  lifecycle: production
+  owner: operations-team
+  system: ecommerce-platform
+  dependsOn:
+    - resource:default/orders-db
+    - resource:default/session-cache
+  providesApis:
+    - admin-management-api
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: admin-console
+  description: React application used by ShopSphere staff to manage catalog, orders, and promotions.
+  annotations:
+    backstage.io/techdocs-ref: dir:./docs/admin-console
+spec:
+  type: website
+  lifecycle: production
+  owner: operations-team
+  system: ecommerce-platform
+  dependsOn:
+    - component:default/admin-service
+  consumesApis:
+    - admin-management-api
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: product-catalog-api
+  description: REST API for retrieving product, pricing, and availability information.
+spec:
+  type: openapi
+  lifecycle: production
+  owner: storefront-team
+  system: ecommerce-platform
+  definition: |
+    openapi: 3.0.3
+    info:
+      title: Product Catalog API
+      version: 2.3.0
+    paths:
+      /products:
+        get:
+          summary: List available products
+          responses:
+            "200":
+              description: Array of products
+              content:
+                application/json:
+                  schema:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
+      /products/{sku}:
+        get:
+          summary: Retrieve details for a specific SKU
+          parameters:
+            - name: sku
+              in: path
+              required: true
+              schema:
+                type: string
+          responses:
+            "200":
+              description: Product details
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/Product'
+            "404":
+              description: Product not found
+    components:
+      schemas:
+        Product:
+           type: object
+           required:
+             - sku
+             - name
+             - price
+             - currency
+           properties:
+             sku:
+               type: string
+               description: Unique stock keeping unit identifier.
+             name:
+               type: string
+             description:
+               type: string
+             price:
+               type: number
+               format: float
+             currency:
+               type: string
+               pattern: '^[A-Z]{3}$'
+             availability:
+               type: string
+               enum: [in_stock, low_stock, out_of_stock]
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: checkout-api
+  description: REST API that powers cart checkout, tax calculation, and payment capture.
+spec:
+  type: openapi
+  lifecycle: production
+  owner: checkout-team
+  system: ecommerce-platform
+  definition: |
+    openapi: 3.0.3
+    info:
+      title: Checkout API
+      version: 1.6.1
+    paths:
+      /checkout/session:
+        post:
+          summary: Start a checkout session
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/CheckoutRequest'
+          responses:
+            "201":
+              description: Session created
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/CheckoutSession'
+      /checkout/session/{id}/confirm:
+        post:
+          summary: Confirm payment and place the order
+          parameters:
+            - name: id
+              in: path
+              required: true
+              schema:
+                type: string
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/CheckoutConfirmation'
+          responses:
+            "200":
+              description: Order confirmed
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/OrderReceipt'
+    components:
+      schemas:
+        CheckoutRequest:
+           type: object
+           required: [cartId, email, shippingAddress]
+           properties:
+             cartId:
+               type: string
+             email:
+               type: string
+               format: email
+             shippingAddress:
+               $ref: '#/components/schemas/Address'
+             paymentMethodId:
+               type: string
+        CheckoutSession:
+           type: object
+           properties:
+             sessionId:
+               type: string
+             expiresAt:
+               type: string
+               format: date-time
+             clientSecret:
+               type: string
+        CheckoutConfirmation:
+           type: object
+           required: [sessionId, paymentToken]
+           properties:
+             sessionId:
+               type: string
+             paymentToken:
+               type: string
+             metadata:
+               type: object
+               additionalProperties: true
+        OrderReceipt:
+           type: object
+           properties:
+             orderId:
+               type: string
+             status:
+               type: string
+             totalAmount:
+               type: number
+             currency:
+               type: string
+        Address:
+           type: object
+           required: [line1, city, postalCode, country]
+           properties:
+             line1:
+               type: string
+             line2:
+               type: string
+             city:
+               type: string
+             state:
+               type: string
+             postalCode:
+               type: string
+             country:
+               type: string
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: order-events-api
+  description: AsyncAPI contract for publishing order lifecycle events to downstream systems.
+spec:
+  type: asyncapi
+  lifecycle: production
+  owner: checkout-team
+  system: ecommerce-platform
+  definition: |
+    asyncapi: 2.5.0
+    info:
+      title: Order Events API
+      version: 1.0.0
+    channels:
+      order.created:
+        subscribe:
+          summary: Emitted when a new order is created
+      order.shipped:
+        subscribe:
+          summary: Emitted when the shipment leaves the warehouse
+---
+apiVersion: backstage.io/v1alpha1
+kind: API
+metadata:
+  name: admin-management-api
+  description: REST API backing the admin console for catalog, orders, and merchandising tasks.
+spec:
+  type: openapi
+  lifecycle: production
+  owner: operations-team
+  system: ecommerce-platform
+  definition: |
+    openapi: 3.0.3
+    info:
+      title: Admin Management API
+      version: 1.0.0
+    paths:
+      /admin/orders/{orderId}:
+        patch:
+          summary: Update order status or resend notifications
+          parameters:
+            - name: orderId
+              in: path
+              required: true
+              schema:
+                type: string
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/OrderUpdateRequest'
+          responses:
+            "200":
+              description: Order updated
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/AdminOrder'
+      /admin/promotions:
+        post:
+          summary: Create a promotion for the storefront
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/PromotionRequest'
+          responses:
+            "201":
+              description: Promotion created
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/Promotion'
+    components:
+      schemas:
+        OrderUpdateRequest:
+           type: object
+           properties:
+             status:
+               type: string
+               enum: [pending, processing, shipped, delivered, cancelled]
+             resendNotification:
+               type: boolean
+             notes:
+               type: string
+        PromotionRequest:
+           type: object
+           required: [name, discountPercent, startsAt, endsAt]
+           properties:
+             name:
+               type: string
+             discountPercent:
+               type: number
+             startsAt:
+               type: string
+               format: date-time
+             endsAt:
+               type: string
+               format: date-time
+             conditions:
+               type: array
+               items:
+                 type: string
+        AdminOrder:
+           type: object
+           properties:
+             orderId:
+               type: string
+             status:
+               type: string
+             totalAmount:
+               type: number
+             customerEmail:
+               type: string
+        Promotion:
+           type: object
+           properties:
+             promotionId:
+               type: string
+             name:
+               type: string
+             discountPercent:
+               type: number
+             status:
+               type: string

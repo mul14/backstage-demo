@@ -20,7 +20,8 @@
     "lint": "backstage-cli repo lint --since origin/master",
     "lint:all": "backstage-cli repo lint",
     "prettier:check": "prettier --check .",
-    "new": "backstage-cli new"
+    "new": "backstage-cli new",
+    "docs:build": "bash -lc 'set -euo pipefail; mkdir -p site; for dir in catalogs/docs/*; do name=$(basename \"$dir\"); echo \"Building $name docs...\"; techdocs-cli generate --source-dir \"$dir\" --output-dir \"site/$name\"; done'"
   },
   "workspaces": {
     "packages": [
@@ -32,6 +33,7 @@
     "@backstage/cli": "^0.34.4",
     "@backstage/e2e-test-utils": "^0.1.1",
     "@playwright/test": "^1.32.3",
+    "@techdocs/cli": "^1.8.0",
     "node-gyp": "^10.0.0",
     "prettier": "^2.3.2",
     "typescript": "~5.8.0"

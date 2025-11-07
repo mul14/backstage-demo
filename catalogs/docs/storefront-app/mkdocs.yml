@@ -1,0 +1,6 @@
+site_name: Storefront App Docs
+site_description: Architecture and runbook for the ShopSphere customer-facing storefront.
+nav:
+  - Overview: index.md
+plugins:
+  - techdocs-core

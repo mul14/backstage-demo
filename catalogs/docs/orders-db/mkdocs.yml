@@ -1,0 +1,9 @@
+site_name: Orders DB Docs
+site_description: Schema documentation and operational notes for the orders PostgreSQL cluster.
+nav:
+  - Overview: index.md
+plugins:
+  - techdocs-core
+extra_javascript:
+  - https://cdn.jsdelivr.net/npm/@dbml/renderer@1.1.5/dist/dbml-renderer.min.js
+  - js/dbml-init.js

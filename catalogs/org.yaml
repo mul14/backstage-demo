@@ -1,0 +1,87 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: commerce-tech
+  description: ShopSphere engineering organization that owns the e-commerce platform.
+spec:
+  type: department
+  profile:
+    displayName: Commerce Technology
+    email: eng@shopsphere.com
+  children: [storefront-team, checkout-team, operations-team]
+---
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: storefront-team
+  description: Owns the customer storefront experience.
+spec:
+  type: team
+  profile:
+    displayName: Storefront Team
+    email: storefront@shopsphere.com
+  parent: commerce-tech
+  children: []
+---
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: checkout-team
+  description: Builds checkout, payments, and order orchestration services.
+spec:
+  type: team
+  profile:
+    displayName: Checkout Team
+    email: checkout@shopsphere.com
+  parent: commerce-tech
+  children: []
+---
+apiVersion: backstage.io/v1alpha1
+kind: Group
+metadata:
+  name: operations-team
+  description: Supports internal tools for merchandising, support, and fraud ops.
+spec:
+  type: team
+  profile:
+    displayName: Operations Tools Team
+    email: operations@shopsphere.com
+  parent: commerce-tech
+  children: []
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: adi-putra
+  description: Memimpin pengalaman storefront ShopSphere.
+spec:
+  profile:
+    displayName: Adi Putra
+    email: adi.putra@shopsphere.com
+  memberOf:
+    - storefront-team
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: siti-rahma
+  description: Lead teknis checkout yang fokus pada keandalan pembayaran.
+spec:
+  profile:
+    displayName: Siti Rahma
+    email: siti.rahma@shopsphere.com
+  memberOf:
+    - checkout-team
+---
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  name: budi-susanto
+  description: Memimpin pengembangan tooling internal dan admin app.
+spec:
+  profile:
+    displayName: Budi Susanto
+    email: budi.susanto@shopsphere.com
+  memberOf:
+    - operations-team
