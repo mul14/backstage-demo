@@ -37,6 +37,7 @@ metadata:
   description: React storefront that customers use to browse products and manage carts.
   annotations:
     backstage.io/techdocs-ref: dir:./docs/storefront-app
+    demo.backstage.io/uptime-url: https://google.com/
     twin.sh/gatus-url: https://status.twin.sh/api/v1/endpoints/core_blog-sitemap/statuses
 spec:
   type: website
@@ -96,6 +97,7 @@ metadata:
   description: React application used by ShopSphere staff to manage catalog, orders, and promotions.
   annotations:
     backstage.io/techdocs-ref: dir:./docs/admin-console
+    demo.backstage.io/uptime-url: https://httpbin.org/status/500
     twin.sh/gatus-url: https://status.twin.sh/api/v1/endpoints/misc_nas/statuses
 spec:
   type: website

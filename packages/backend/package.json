@@ -46,6 +46,7 @@
     "@internal/plugin-gatus-backend": "workspace:^",
     "app": "link:../app",
     "better-sqlite3": "^12.0.0",
+    "cross-fetch": "^4.0.0",
     "node-gyp": "^10.0.0",
     "pg": "^8.11.3"
   },

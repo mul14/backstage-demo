@@ -64,4 +64,7 @@ backend.add(import('@backstage/plugin-notifications-backend'));
 backend.add(import('@backstage/plugin-signals-backend'));
 
 backend.add(import('@internal/plugin-gatus-backend'));
+
+backend.add(import('./plugins/uptime'));
+
 backend.start();
