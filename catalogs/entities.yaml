@@ -14,6 +14,7 @@ metadata:
   description: Managed PostgreSQL cluster storing carts, orders, and payment intents.
   annotations:
     backstage.io/techdocs-ref: dir:./docs/orders-db
+    twin.sh/gatus-url: https://status.twin.sh/api/v1/endpoints/misc_database/statuses
 spec:
   type: database
   owner: checkout-team
@@ -36,6 +37,7 @@ metadata:
   description: React storefront that customers use to browse products and manage carts.
   annotations:
     backstage.io/techdocs-ref: dir:./docs/storefront-app
+    twin.sh/gatus-url: https://status.twin.sh/api/v1/endpoints/core_blog-sitemap/statuses
 spec:
   type: website
   lifecycle: production
@@ -75,6 +77,7 @@ metadata:
   description: Internal service that powers admin workflows for merchandising and customer support.
   annotations:
     backstage.io/techdocs-ref: dir:./docs/admin-service
+    twin.sh/gatus-url: https://status.twin.sh/api/v1/endpoints/core_blog-external/statuses
 spec:
   type: service
   lifecycle: production
@@ -93,6 +96,7 @@ metadata:
   description: React application used by ShopSphere staff to manage catalog, orders, and promotions.
   annotations:
     backstage.io/techdocs-ref: dir:./docs/admin-console
+    twin.sh/gatus-url: https://status.twin.sh/api/v1/endpoints/misc_nas/statuses
 spec:
   type: website
   lifecycle: production

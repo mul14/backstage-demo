@@ -57,6 +57,10 @@ import {
   EntityKubernetesContent,
   isKubernetesAvailable,
 } from '@backstage/plugin-kubernetes';
+import {
+  EntityGatusContent,
+  isGatusAvailable,
+} from '@internal/plugin-gatus';
 
 const techdocsContent = (
   <EntityTechdocsContent>
@@ -153,6 +157,10 @@ const serviceEntityPage = (
       {cicdContent}
     </EntityLayout.Route>
 
+    <EntityLayout.Route path="/uptime" title="Uptime" if={isGatusAvailable}>
+      <EntityGatusContent />
+    </EntityLayout.Route>
+
     <EntityLayout.Route
       path="/kubernetes"
       title="Kubernetes"
@@ -199,6 +207,10 @@ const websiteEntityPage = (
       {cicdContent}
     </EntityLayout.Route>
 
+    <EntityLayout.Route path="/uptime" title="Uptime" if={isGatusAvailable}>
+      <EntityGatusContent />
+    </EntityLayout.Route>
+
     <EntityLayout.Route
       path="/kubernetes"
       title="Kubernetes"
@@ -235,6 +247,10 @@ const defaultEntityPage = (
   <EntityLayout>
     <EntityLayout.Route path="/" title="Overview">
       {overviewContent}
+    </EntityLayout.Route>
+
+    <EntityLayout.Route path="/uptime" title="Uptime" if={isGatusAvailable}>
+      <EntityGatusContent />
     </EntityLayout.Route>
 
     <EntityLayout.Route path="/docs" title="Docs">

@@ -1,13 +1,23 @@
-# gatus
+# Gatus Uptime plugin
 
-Welcome to the gatus plugin!
+This frontend plugin adds an **Uptime** tab to eligible catalog entities and
+renders the latest status history taken straight from your
+[Gatus](https://github.com/TwiN/gatus) deployment. It relies on the companion
+`@internal/plugin-gatus-backend` package to read the catalog, resolve the
+annotation, and proxy the upstream request.
 
-_This plugin was created through the Backstage CLI_
+## Usage
 
-## Getting started
+1. Add the annotation to any component entity:
 
-Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn start` in the root directory, and then navigating to [/gatus](http://localhost:3000/gatus).
+   ```yaml
+   metadata:
+     annotations:
+       twin.sh/gatus-url: https://status.twin.sh/api/v1/endpoints/misc_database/statuses
+   ```
 
-You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
-This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.
-It is only meant for local development, and the setup for it can be found inside the [/dev](./dev) directory.
+2. Visit the entity in Backstage. An **Uptime** tab will be visible whenever the
+   annotation is present. Data is fetched via the backend plugin by calling
+   `/api/gatus/uptime/<namespace>/<name>`.
+
+3. Browse to `/gatus` in the Backstage app for quick start instructions.

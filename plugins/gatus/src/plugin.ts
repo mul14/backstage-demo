@@ -1,4 +1,5 @@
 import {
+  createComponentExtension,
   createPlugin,
   createRoutableExtension,
 } from '@backstage/core-plugin-api';
@@ -16,7 +17,21 @@ export const GatusPage = gatusPlugin.provide(
   createRoutableExtension({
     name: 'GatusPage',
     component: () =>
-      import('./components/ExampleComponent').then(m => m.ExampleComponent),
+      import('./components/StandalonePage/StandalonePage').then(
+        m => m.StandalonePage,
+      ),
     mountPoint: rootRouteRef,
+  }),
+);
+
+export const EntityGatusContent = gatusPlugin.provide(
+  createComponentExtension({
+    name: 'EntityGatusContent',
+    component: {
+      lazy: () =>
+        import('./components/EntityContent/EntityGatusContent').then(
+          m => m.EntityGatusContent,
+        ),
+    },
   }),
 );

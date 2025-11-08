@@ -2,8 +2,8 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 import { createRouter } from './router';
-import { todoListServiceRef } from './services/TodoListService';
 
 /**
  * gatusPlugin backend plugin
@@ -17,13 +17,15 @@ export const gatusPlugin = createBackendPlugin({
       deps: {
         httpAuth: coreServices.httpAuth,
         httpRouter: coreServices.httpRouter,
-        todoList: todoListServiceRef,
+        catalog: catalogServiceRef,
+        logger: coreServices.logger,
       },
-      async init({ httpAuth, httpRouter, todoList }) {
+      async init({ httpAuth, httpRouter, catalog, logger }) {
         httpRouter.use(
           await createRouter({
             httpAuth,
-            todoList,
+            catalog,
+            logger,
           }),
         );
       },

@@ -1,28 +1,31 @@
-# gatus
+# Gatus backend plugin
 
-This plugin backend was templated using the Backstage CLI. You should replace this text with a description of your plugin backend.
+This backend plugin exposes `/api/gatus/uptime/:namespace/:name`. The handler:
+
+1. Looks up the referenced component in the catalog.
+2. Reads the `twin.sh/gatus-url` annotation.
+3. Fetches the upstream Gatus `/statuses` endpoint.
+4. Returns the resulting payload to the frontend.
 
 ## Installation
 
-This plugin is installed via the `@internal/plugin-gatus-backend` package. To install it to your backend package, run the following command:
-
-```bash
-# From your root directory
-yarn --cwd packages/backend add @internal/plugin-gatus-backend
-```
-
-Then add the plugin to your backend in `packages/backend/src/index.ts`:
+The demo backend already registers the plugin in `packages/backend/src/index.ts`:
 
 ```ts
 const backend = createBackend();
-// ...
+// …
 backend.add(import('@internal/plugin-gatus-backend'));
+```
+
+Ensure your catalog entities define the annotation:
+
+```yaml
+metadata:
+  annotations:
+    twin.sh/gatus-url: https://status.twin.sh/api/v1/endpoints/misc_database/statuses
 ```
 
 ## Development
 
-This plugin backend can be started in a standalone mode from directly in this
-package with `yarn start`. It is a limited setup that is most convenient when
-developing the plugin backend itself.
-
-If you want to run the entire project, including the frontend, run `yarn start` from the root directory.
+Run `yarn start` from `plugins/gatus-backend` to develop the backend plugin in
+isolation, or `yarn start` from the repo root to run the full Backstage stack.
